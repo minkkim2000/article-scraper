@@ -7,9 +7,6 @@ var bodyParser = require("body-parser");
 var PORT = process.env.PORT || 3000;
 var app = express();
 
-
-var routes = require("./routes");
-
 app.use(express.static("public"));
 
 // Connect Handlebars to our Express app
@@ -20,8 +17,12 @@ app.set("view engine", "handlebars");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+
+var routes = require("./routes");
 /// Have every request go through our route middleware
-app.use(routes);
+app.use("/notes", routes);
+app.use("/headlines", routes);
+app.use("/fetch", routes);
 
 // If deployed, use the deployed database. Otherwise use the local mongoHeadlines database
 var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
