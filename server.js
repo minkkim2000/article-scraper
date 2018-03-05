@@ -1,40 +1,53 @@
+// Dependencies
 var express = require("express");
+var bodyParser = require("body-parser");
 var mongoose = require("mongoose");
 var exphbs = require("express-handlebars");
-var bodyParser = require("body-parser");
 
 
-var PORT = process.env.PORT || 3000;
+// Initialize Express
+var port = process.env.PORT || 3000;
 var app = express();
-
 app.use(express.static("public"));
 
-// Connect Handlebars to our Express app
-app.engine("handlebars", exphbs({ defaultLayout: "main" }));
-app.set("view engine", "handlebars");
 
-// Use bodyParser in our app
-app.use(bodyParser.urlencoded({ extended: false }));
+// Use body parser
+app.use(bodyParser.urlencoded({
+  extended: false
+}));
 app.use(bodyParser.json());
 
 
+// Initialize Handlebars
+app.engine("handlebars", exphbs({ defaultLayout: "main" }));
+app.set("view engine", "handlebars");
+
+
+// ROUTES
 var routes = require("./routes");
-/// Have every request go through our route middleware
-app.use("/notes", routes);
-app.use("/headlines", routes);
-app.use("/fetch", routes);
+app.use(routes);
 
-// If deployed, use the deployed database. Otherwise use the local mongoHeadlines database
-var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
 
-// Set mongoose to leverage built in JavaScript ES6 Promises
-// Connect to the Mongo DB
-mongoose.Promise = Promise;
-mongoose.connect(MONGODB_URI, {
-  useMongoClient: true
+
+// Mongoose connections
+var URI = process.env.MONGODB_URI || 'mongodb://localhost/article-scraper'; 
+mongoose.connect(URI);
+var db = mongoose.connection;
+
+
+// Show any mongoose errors
+db.on("error", function(error) {
+  console.log("Mongoose Error: ", error);
 });
 
-// Listen on the port
-app.listen(PORT, function() {
-  console.log("Listening on port: " + PORT);
+
+// Once logged in to the db through mongoose, log a success message
+db.once("open", function() {
+  console.log("Mongoose connection successful.");
+});
+
+
+// Listen on port 3000
+app.listen(port, function() {
+  console.log("App running on port 3000!");
 });

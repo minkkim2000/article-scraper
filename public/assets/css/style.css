@@ -1,0 +1,10 @@
+.article-container{
+	width: 80%;
+}
+
+#logo {
+  height: 100%;
+  background-image: url("../images/logo.gif");
+  background-size: cover;
+  margin: 30px;
+}
